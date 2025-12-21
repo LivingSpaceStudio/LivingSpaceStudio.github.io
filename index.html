@@ -122,6 +122,23 @@
             font-size: 1.05rem;
         }
 
+        /* Clickable scaled model image (replaces Christmas Bonus button) */
+        .concept-trigger {
+            border: 0;
+            padding: 0;
+            margin: 0;
+            background: transparent;
+            width: 100%;
+            display: block;
+            cursor: pointer;
+        }
+
+        .concept-trigger:focus {
+            outline: 2px solid #000;
+            outline-offset: 4px;
+            border-radius: 12px;
+        }
+
         /* --- Christmas Bonus button --- */
         .bonus-wrap {
             display: flex;
@@ -228,12 +245,6 @@
 
         <header style="flex-direction: column;">
             <img src="assets/logo/logo.png" alt="Living Space Studio logo" />
-
-            <div class="bonus-wrap">
-                <button class="bonus-btn" id="christmasBtn" type="button">
-                    Christmas Bonus
-                </button>
-            </div>
         </header>
 
         <main>
@@ -317,6 +328,29 @@
                 </p>
             </section>
 
+            <section class="concept">
+                <h2>Scaled model (Live Demo - Select Christmas Tree)</h2>
+
+                <div class="concept-frame">
+                    <button class="concept-trigger" id="christmasTrigger" type="button"
+                        aria-label="Open Christmas Bonus">
+                        <img src="assets/conceptart/ch1.jpg" alt="Scaled model concept art">
+                    </button>
+                </div>
+
+                <p>
+                    This is our live scaled model — showing how far you can push our animations… for a price.
+                    More workers, more motion, more scenes, more personality, and a bigger “living world” feel.
+                </p>
+
+                <p>
+                    All tiers (including the base) come packaged with the same in-browser menu and interactive
+                    experience.
+                    The difference is scale: how many animated elements you want moving at once, and how deep you want
+                    the scene to go.
+                </p>
+            </section>
+
             <div class="footer">
                 <p>
                     Contact: livingspacestudioedm@gmail.com
@@ -334,7 +368,7 @@
     </div>
 
     <script>
-        const christmasBtn = document.getElementById("christmasBtn");
+        const christmasBtn = document.getElementById("christmasTrigger");
         const overlay = document.getElementById("christmasOverlay");
         const closeBtn = document.getElementById("christmasClose");
         const frame = document.getElementById("christmasFrame");
