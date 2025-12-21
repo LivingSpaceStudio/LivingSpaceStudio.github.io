@@ -183,9 +183,10 @@
             <img src="assets/logo/logo.png" alt="Living Space Studio logo" />
 
             <div class="bonus-wrap">
-                <a class="bonus-btn" href="Christmas/" target="_blank" rel="noopener">
+                <button class="bonus-btn" id="christmasBtn" type="button">
                     Christmas Bonus
-                </a>
+                </button>
+
             </div>
         </header>
 
@@ -277,6 +278,43 @@
         </main>
 
     </div>
+    <script>
+        const btn = document.getElementById("christmasBtn");
+
+        function isMobile() {
+            return (
+                window.matchMedia("(max-width: 820px)").matches ||
+                (navigator.maxTouchPoints && navigator.maxTouchPoints > 0)
+            );
+        }
+
+        function requestFullscreen() {
+            const el = document.documentElement;
+            const req =
+                el.requestFullscreen ||
+                el.webkitRequestFullscreen ||
+                el.mozRequestFullScreen ||
+                el.msRequestFullscreen;
+
+            if (req) {
+                try { req.call(el); } catch (e) { }
+            }
+        }
+
+        btn.addEventListener("click", () => {
+            if (isMobile()) {
+                // Mobile: fullscreen first, then navigate
+                requestFullscreen();
+                setTimeout(() => {
+                    window.location.href = "Christmas/";
+                }, 150);
+            } else {
+                // Desktop: same tab, normal navigation
+                window.location.href = "Christmas/";
+            }
+        });
+    </script>
+
 </body>
 
 </html>
