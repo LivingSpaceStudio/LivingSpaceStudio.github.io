@@ -1,45 +1,236 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
+
 <head>
-  <title>Living Space Studio</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Living Space Studio</title>
+
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #111111;
+            --muted: #555555;
+            --line: #e7e7e7;
+            --max: 980px;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .wrap {
+            max-width: var(--max);
+            margin: 0 auto;
+            padding: 56px 20px 80px;
+        }
+
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px 0 34px;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 38px;
+        }
+
+        header img {
+            max-width: 720px;
+            width: min(720px, 92vw);
+            height: auto;
+            display: block;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 0 0 10px;
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            margin: 0 0 14px;
+            line-height: 1.55;
+            color: var(--muted);
+            font-size: 1.05rem;
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 22px 22px;
+            margin: 18px 0;
+            background: #fff;
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 1.25rem;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+
+        .price-line {
+            font-size: 1.15rem;
+            color: var(--text);
+            margin: 8px 0 12px;
+            font-weight: 700;
+        }
+
+        ul {
+            margin: 10px 0 0 18px;
+            padding: 0;
+            color: var(--muted);
+            line-height: 1.55;
+            font-size: 1.03rem;
+        }
+
+        .note {
+            margin-top: 14px;
+            font-size: 0.98rem;
+            color: var(--muted);
+        }
+
+        /* --- Concept Art Frame --- */
+        .concept {
+            margin-top: 70px;
+        }
+
+        .concept-frame {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow:
+                0 40px 80px rgba(0, 0, 0, 0.08),
+                0 10px 30px rgba(0, 0, 0, 0.06);
+        }
+
+        .concept-frame img {
+            width: 100%;
+            display: block;
+            border-radius: 10px;
+        }
+
+        .concept p {
+            margin-top: 16px;
+            max-width: 720px;
+            color: var(--muted);
+            font-size: 1.05rem;
+        }
+
+        .footer {
+            margin-top: 46px;
+            padding-top: 20px;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 0.98rem;
+        }
+
+        .footer a {
+            color: inherit;
+        }
+    </style>
 </head>
 
-<body bgcolor="#000000" text="#00ff00">
+<body>
+    <div class="wrap">
 
-<center>
+        <header>
+            <img src="assets/logo/logo.png" alt="Living Space Studio logo" />
+        </header>
 
-<br><br>
+        <main>
+            <h1>Pricing</h1>
+            <p>
+                We create full cartoon enactments of real-world spaces — with animated “workers,” animated “customers,”
+                and custom theme songs that bring the environment to life.
+            </p>
 
-<img src="https://gifcities.org/images/underconstruction.gif"><br><br>
+            <div class="card">
+                <h2>Starting package</h2>
+                <div class="price-line">$500</div>
+                <p>
+                    A shop with <strong>one “worker” animated</strong> and <strong>one “customer”</strong>, with a
+                    <strong>full cartoon enactment of the store</strong> and a <strong>custom theme song</strong>.
+                </p>
+            </div>
 
-<font face="Comic Sans MS" size="6">
-🚧 Living Space Studio 🚧
-</font>
+            <div class="card">
+                <h2>Add-ons</h2>
+                <div class="price-line">+ $500 per additional worker</div>
+                <p>
+                    Each additional worker also includes:
+                </p>
+                <ul>
+                    <li>An additional customer</li>
+                    <li>An additional custom theme song</li>
+                </ul>
+                <p class="note">
+                    There is <strong>no limit</strong> to the number of workers or songs.
+                </p>
+            </div>
 
-<br><br>
+            <div class="card">
+                <h2>What counts as a “worker”?</h2>
+                <p>
+                    A worker doesn’t have to be a person. A worker can be a <strong>product</strong>.
+                    If your product is your business, we can feature your product as the worker.
+                </p>
+            </div>
+            <section class="concept">
+                <h2>Base model</h2>
 
-<font face="Courier New" size="4">
-SITE UNDER CONSTRUCTION<br>
-PLEASE CHECK BACK SOON
-</font>
+                <div class="concept-frame">
+                    <img src="assets/conceptart/ph1.png" alt="Base model concept art">
+                </div>
 
-<br><br>
+                <p>
+                    This is our base model.
+                    A full cartoon enactment of the real space, featuring
+                    <strong>one animated worker</strong> and a
+                    <strong>stationary customer grouping</strong>.
+                </p>
 
-<img src="https://gifcities.org/images/worker.gif">
-<img src="https://gifcities.org/images/worker.gif">
-<img src="https://gifcities.org/images/worker.gif">
+                <p>
+                    This structure establishes the visual language of the store —
+                    layout, tone, and atmosphere — and serves as the foundation
+                    every larger build expands from.
+                </p>
+            </section>
 
-<br><br>
+            <section class="concept">
+                <h2>Expanded model</h2>
 
-<marquee>
-✨ MAKING SPACES COME ALIVE ✨
-</marquee>
+                <div class="concept-frame">
+                    <img src="assets/conceptart/ph2.png" alt="Expanded model concept art">
+                </div>
 
-<br><br>
+                <p>
+                    This is the expanded model.
+                    A full cartoon enactment of the space featuring
+                    <strong>two animated workers</strong> and
+                    <strong>two stationary customer groupings</strong>.
+                </p>
 
-<font size="2">© 1999</font>
+                <p>
+                    Additional workers introduce more motion, personality, and rhythm
+                    to the environment. Each added worker expands the narrative capacity
+                    of the space while preserving calm and readability.
+                </p>
+            </section>
 
-</center>
+            <div class="footer">
+                <p>
+                    Contact:
+                </p>
+            </div>
+        </main>
 
+    </div>
 </body>
+
 </html>
