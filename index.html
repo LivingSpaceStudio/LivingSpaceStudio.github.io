@@ -25,10 +25,11 @@
         }
 
         .wrap {
-            max-width: var(--max);
+            max-width: 980px;
             margin: 0 auto;
-            padding: 56px 20px 80px;
+            padding: 24px 20px 80px;
         }
+
 
         header {
             display: flex;
@@ -122,6 +123,45 @@
             font-size: 1.05rem;
         }
 
+        /* --- Christmas Bonus button --- */
+        .bonus-wrap {
+            display: flex;
+            justify-content: center;
+            margin: 8px 0 8px;
+        }
+
+        .bonus-btn {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            padding: 14px 22px;
+            border-radius: 999px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-decoration: none;
+            box-shadow:
+                0 18px 40px rgba(0, 0, 0, 0.18),
+                0 6px 16px rgba(0, 0, 0, 0.10);
+            transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+        }
+
+        .bonus-btn:hover {
+            transform: translateY(-1px);
+            box-shadow:
+                0 22px 50px rgba(0, 0, 0, 0.22),
+                0 8px 18px rgba(0, 0, 0, 0.12);
+        }
+
+        .bonus-btn:active {
+            transform: translateY(0px);
+            opacity: 0.9;
+        }
+
+        .bonus-btn:focus {
+            outline: 2px solid #000;
+            outline-offset: 3px;
+        }
+
         .footer {
             margin-top: 46px;
             padding-top: 20px;
@@ -139,8 +179,14 @@
 <body>
     <div class="wrap">
 
-        <header>
+        <header style="flex-direction: column;">
             <img src="assets/logo/logo.png" alt="Living Space Studio logo" />
+
+            <div class="bonus-wrap">
+                <a class="bonus-btn" href="Christmas/" target="_blank" rel="noopener">
+                    Christmas Bonus
+                </a>
+            </div>
         </header>
 
         <main>
