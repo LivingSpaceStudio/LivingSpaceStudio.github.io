@@ -122,7 +122,7 @@
             font-size: 1.05rem;
         }
 
-        /* Clickable scaled model image (replaces Christmas Bonus button) */
+        /* Clickable image button */
         .concept-trigger {
             border: 0;
             padding: 0;
@@ -139,53 +139,6 @@
             border-radius: 12px;
         }
 
-        /* --- Christmas Bonus button --- */
-        .bonus-wrap {
-            display: flex;
-            justify-content: center;
-            margin: 8px 0 8px;
-        }
-
-        .bonus-btn {
-            display: inline-block;
-            background: #000;
-            color: #fff;
-            padding: 14px 22px;
-            border-radius: 999px;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-            text-decoration: none;
-
-            /* Button normalization */
-            border: 0;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 1rem;
-            line-height: 1;
-
-            box-shadow:
-                0 18px 40px rgba(0, 0, 0, 0.18),
-                0 6px 16px rgba(0, 0, 0, 0.10);
-            transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
-        }
-
-        .bonus-btn:hover {
-            transform: translateY(-1px);
-            box-shadow:
-                0 22px 50px rgba(0, 0, 0, 0.22),
-                0 8px 18px rgba(0, 0, 0, 0.12);
-        }
-
-        .bonus-btn:active {
-            transform: translateY(0px);
-            opacity: 0.9;
-        }
-
-        .bonus-btn:focus {
-            outline: 2px solid #000;
-            outline-offset: 3px;
-        }
-
         .footer {
             margin-top: 46px;
             padding-top: 20px;
@@ -198,7 +151,7 @@
             color: inherit;
         }
 
-        /* --- Christmas fullscreen overlay (mobile-first) --- */
+        /* --- Fullscreen overlay (mobile-first) --- */
         .christmas-overlay {
             position: fixed;
             inset: 0;
@@ -209,14 +162,6 @@
 
         .christmas-overlay.show {
             display: block;
-        }
-
-        .christmas-overlay iframe {
-            width: 100%;
-            height: 100%;
-            border: 0;
-            display: block;
-            background: #000;
         }
 
         .christmas-close {
@@ -250,7 +195,7 @@
         <main>
             <h1>Pricing</h1>
             <p>
-                We create full cartoon enactments of real-world spaces with animated “workers,” animated “customers,”
+                We create full cartoon enactments of real-world spaces with animated “workers,” stationary “customers,”
                 and custom theme songs that bring the environment to life.
             </p>
 
@@ -258,7 +203,8 @@
                 <h2>Starting package</h2>
                 <div class="price-line">$500</div>
                 <p>
-                    A shop with <strong>one “worker” animated</strong> and <strong>one “customer”</strong>, with a
+                    A shop with <strong>one “worker” animated</strong> and <strong>one “customer” stationary</strong>,
+                    with a
                     <strong>full cartoon enactment of the store</strong> and a <strong>custom theme song</strong>.
                 </p>
             </div>
@@ -274,7 +220,8 @@
                     <li>An additional custom theme song</li>
                 </ul>
                 <p class="note">
-                    There is <strong>no limit</strong> to the number of workers or songs.
+                    There is <strong>no limit</strong> to the number of workers. The number of songs can vary depending
+                    on the theme.
                 </p>
             </div>
 
@@ -290,8 +237,12 @@
                 <h2>Base model</h2>
 
                 <div class="concept-frame">
-                    <img src="assets/conceptart/ph1.png" alt="Base model concept art">
+                    <button class="concept-trigger concept-demo" type="button" data-img="assets/conceptart/ph1.png"
+                        data-audio="assets/songs/demo1.mp3" aria-label="Play demo 1">
+                        <img src="assets/conceptart/ph1.png" alt="Base model concept art">
+                    </button>
                 </div>
+                <i>Click/tap to play Demo 1.</i>
 
                 <p>
                     This is our base model.
@@ -311,8 +262,12 @@
                 <h2>Expanded model</h2>
 
                 <div class="concept-frame">
-                    <img src="assets/conceptart/ph2.png" alt="Expanded model concept art">
+                    <button class="concept-trigger concept-demo" type="button" data-img="assets/conceptart/ph2.png"
+                        data-audio="assets/songs/demo2.mp3" aria-label="Play demo 2">
+                        <img src="assets/conceptart/ph2.png" alt="Expanded model concept art">
+                    </button>
                 </div>
+                <i>Click/tap to play Demo 2.</i>
 
                 <p>
                     This is the expanded model.
@@ -361,11 +316,25 @@
 
     </div>
 
-    <!-- Mobile fullscreen overlay -->
+    <!-- Fullscreen overlay player -->
     <div class="christmas-overlay" id="christmasOverlay" aria-hidden="true">
         <button class="christmas-close" id="christmasClose" type="button">Close</button>
+
+        <!-- Image "video" -->
+        <img id="demoImage" alt="" style="
+            position:absolute; inset:0;
+            width:100%; height:100%;
+            object-fit:contain;
+            background:#000;
+            display:none;
+        ">
+
+        <!-- Audio -->
+        <audio id="demoAudio" preload="auto"></audio>
+
+        <!-- Keep iframe only for your Christmas live demo -->
         <iframe id="christmasFrame" src="about:blank" title="Christmas Bonus" allow="fullscreen; autoplay"
-            allowfullscreen></iframe>
+            allowfullscreen style="width:100%; height:100%; border:0; display:none; background:#000;"></iframe>
     </div>
 
     <script>
@@ -373,6 +342,10 @@
         const overlay = document.getElementById("christmasOverlay");
         const closeBtn = document.getElementById("christmasClose");
         const frame = document.getElementById("christmasFrame");
+
+        const demoImage = document.getElementById("demoImage");
+        const demoAudio = document.getElementById("demoAudio");
+        const demoButtons = document.querySelectorAll(".concept-demo");
 
         function isMobileish() {
             return window.matchMedia("(max-width: 900px)").matches ||
@@ -397,27 +370,75 @@
             if (exit) { try { exit.call(document); } catch (e) { } }
         }
 
-        function openChristmasOverlay() {
-            // Show overlay, lock background scroll
+        function openOverlay() {
             overlay.classList.add("show");
             overlay.setAttribute("aria-hidden", "false");
             document.body.style.overflow = "hidden";
-
-            // Load the Christmas page only when opened (keeps homepage snappy)
-            frame.src = "Christmas/";
-
-            // Attempt fullscreen (Android Chrome usually allows on user tap)
             requestFullscreen(overlay);
         }
 
-        function closeChristmasOverlay() {
+        function stopAllMedia() {
+            // Stop audio
+            demoAudio.pause();
+            demoAudio.currentTime = 0;
+            demoAudio.removeAttribute("src");
+            demoAudio.load();
+
+            // Hide/clear image
+            demoImage.style.display = "none";
+            demoImage.removeAttribute("src");
+            demoImage.alt = "";
+
+            // Stop iframe content
+            frame.style.display = "none";
+            frame.src = "about:blank";
+        }
+
+        function closeOverlay() {
             overlay.classList.remove("show");
             overlay.setAttribute("aria-hidden", "true");
             document.body.style.overflow = "";
-
-            // Stop the game/audio by unloading iframe
-            frame.src = "about:blank";
+            stopAllMedia();
             exitFullscreen();
+        }
+
+        // ====== DEMO IMAGE + AUDIO MODE ======
+        async function playImageDemo(imgSrc, audioSrc) {
+            stopAllMedia();
+            openOverlay();
+
+            demoImage.src = imgSrc;
+            demoImage.alt = "Demo preview";
+            demoImage.style.display = "block";
+
+            // Autoplay audio (works best because this is inside a user click)
+            demoAudio.src = audioSrc;
+            demoAudio.currentTime = 0;
+
+            try {
+                await demoAudio.play();
+            } catch (e) {
+                // If autoplay is blocked for some reason, user can tap again
+                console.log("Autoplay blocked:", e);
+            }
+        }
+
+        // Hook up ph1/ph2
+        demoButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const img = btn.getAttribute("data-img");
+                const audio = btn.getAttribute("data-audio");
+                playImageDemo(img, audio);
+            });
+        });
+
+        // ====== CHRISTMAS LIVE DEMO MODE (same as before) ======
+        function openChristmasOverlay() {
+            stopAllMedia();
+            openOverlay();
+
+            frame.style.display = "block";
+            frame.src = "Christmas/";
         }
 
         christmasBtn.addEventListener("click", () => {
@@ -431,12 +452,12 @@
             }
         });
 
-        closeBtn.addEventListener("click", closeChristmasOverlay);
+        closeBtn.addEventListener("click", closeOverlay);
 
         // ESC closes overlay on desktop
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape" && overlay.classList.contains("show")) {
-                closeChristmasOverlay();
+                closeOverlay();
             }
         });
     </script>
