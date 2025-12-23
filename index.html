@@ -237,12 +237,16 @@
                 <h2>Base model</h2>
 
                 <div class="concept-frame">
-                    <button class="concept-trigger concept-demo" type="button" data-img="assets/conceptart/ph1.png"
-                        data-audio="assets/songs/demo1.mp3" aria-label="Play demo 1">
-                        <img src="assets/conceptart/ph1.png" alt="Base model concept art">
+                    <!-- UPDATED: bs1 preview image triggers VIDEO+audio mode -->
+                    <button class="concept-trigger concept-video-demo" type="button"
+                        data-poster="assets/conceptart/bs1.png"
+                        data-video="assets/conceptart/bs1.mp4"
+                        data-audio="assets/songs/bs1.mp3"
+                        aria-label="Play Base model video demo">
+                        <img src="assets/conceptart/bs1.png" alt="Base model concept art">
                     </button>
                 </div>
-                <i>Click/tap to play Demo 1.</i>
+                <i>Click/tap to play Base Demo.</i>
 
                 <p>
                     This is our base model.
@@ -262,6 +266,7 @@
                 <h2>Expanded model</h2>
 
                 <div class="concept-frame">
+                    <!-- unchanged: image+audio mode -->
                     <button class="concept-trigger concept-demo" type="button" data-img="assets/conceptart/ph2.png"
                         data-audio="assets/songs/demo2.mp3" aria-label="Play demo 2">
                         <img src="assets/conceptart/ph2.png" alt="Expanded model concept art">
@@ -320,7 +325,16 @@
     <div class="christmas-overlay" id="christmasOverlay" aria-hidden="true">
         <button class="christmas-close" id="christmasClose" type="button">Close</button>
 
-        <!-- Image "video" -->
+        <!-- VIDEO (for bs1.mp4 mode) -->
+        <video id="demoVideo" playsinline preload="auto" style="
+            position:absolute; inset:0;
+            width:100%; height:100%;
+            object-fit:contain;
+            background:#000;
+            display:none;
+        "></video>
+
+        <!-- Image "video" (for ph2.png mode) -->
         <img id="demoImage" alt="" style="
             position:absolute; inset:0;
             width:100%; height:100%;
@@ -329,7 +343,7 @@
             display:none;
         ">
 
-        <!-- Audio -->
+        <!-- Audio (used by both image+audio and video+audio modes) -->
         <audio id="demoAudio" preload="auto"></audio>
 
         <!-- Keep iframe only for your Christmas live demo -->
@@ -343,9 +357,12 @@
         const closeBtn = document.getElementById("christmasClose");
         const frame = document.getElementById("christmasFrame");
 
+        const demoVideo = document.getElementById("demoVideo");
         const demoImage = document.getElementById("demoImage");
         const demoAudio = document.getElementById("demoAudio");
-        const demoButtons = document.querySelectorAll(".concept-demo");
+
+        const imageDemoButtons = document.querySelectorAll(".concept-demo");
+        const videoDemoButtons = document.querySelectorAll(".concept-video-demo");
 
         function isMobileish() {
             return window.matchMedia("(max-width: 900px)").matches ||
@@ -384,6 +401,14 @@
             demoAudio.removeAttribute("src");
             demoAudio.load();
 
+            // Stop/hide video
+            demoVideo.pause();
+            demoVideo.currentTime = 0;
+            demoVideo.removeAttribute("src");
+            demoVideo.removeAttribute("poster");
+            demoVideo.load();
+            demoVideo.style.display = "none";
+
             // Hide/clear image
             demoImage.style.display = "none";
             demoImage.removeAttribute("src");
@@ -402,7 +427,7 @@
             exitFullscreen();
         }
 
-        // ====== DEMO IMAGE + AUDIO MODE ======
+        // ====== IMAGE + AUDIO MODE (ph2) ======
         async function playImageDemo(imgSrc, audioSrc) {
             stopAllMedia();
             openOverlay();
@@ -411,20 +436,37 @@
             demoImage.alt = "Demo preview";
             demoImage.style.display = "block";
 
-            // Autoplay audio (works best because this is inside a user click)
             demoAudio.src = audioSrc;
             demoAudio.currentTime = 0;
 
             try {
                 await demoAudio.play();
             } catch (e) {
-                // If autoplay is blocked for some reason, user can tap again
                 console.log("Autoplay blocked:", e);
             }
         }
 
-        // Hook up ph1/ph2
-        demoButtons.forEach(btn => {
+        // ====== VIDEO + AUDIO MODE (bs1) ======
+        async function playVideoDemo(videoSrc, audioSrc, posterSrc) {
+            stopAllMedia();
+            openOverlay();
+
+            // Show video element (same “Christmas overlay” feel, no menu)
+            if (posterSrc) demoVideo.poster = posterSrc;
+            demoVideo.src = videoSrc;
+            demoVideo.style.display = "block";
+
+            // Start both together as best as browsers allow
+            demoAudio.src = audioSrc;
+            demoAudio.currentTime = 0;
+
+            // Try to start video + audio (user click -> should work)
+            try { await demoVideo.play(); } catch (e) { console.log("Video play blocked:", e); }
+            try { await demoAudio.play(); } catch (e) { console.log("Audio play blocked:", e); }
+        }
+
+        // Hook up image demos (ph2)
+        imageDemoButtons.forEach(btn => {
             btn.addEventListener("click", () => {
                 const img = btn.getAttribute("data-img");
                 const audio = btn.getAttribute("data-audio");
@@ -432,7 +474,17 @@
             });
         });
 
-        // ====== CHRISTMAS LIVE DEMO MODE (same as before) ======
+        // Hook up video demo (bs1)
+        videoDemoButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const poster = btn.getAttribute("data-poster");
+                const video = btn.getAttribute("data-video");
+                const audio = btn.getAttribute("data-audio");
+                playVideoDemo(video, audio, poster);
+            });
+        });
+
+        // ====== CHRISTMAS LIVE DEMO MODE (iframe) ======
         function openChristmasOverlay() {
             stopAllMedia();
             openOverlay();
@@ -442,9 +494,6 @@
         }
 
         christmasBtn.addEventListener("click", () => {
-            // Same-tab behavior:
-            // - Mobile: overlay + fullscreen attempt
-            // - Desktop: direct navigation (same tab)
             if (isMobileish()) {
                 openChristmasOverlay();
             } else {
