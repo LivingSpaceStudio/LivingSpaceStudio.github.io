@@ -373,12 +373,13 @@
                 <h2>Expanded model</h2>
 
                 <div class="concept-frame">
-                    <button class="concept-trigger concept-demo" type="button" data-img="assets/conceptart/ph2.png"
-                        data-audio="assets/songs/demo2.mp3" aria-label="Play demo 2">
-                        <img src="assets/conceptart/ph2.png" alt="Expanded model concept art">
+                    <button class="concept-trigger concept-video-demo" type="button"
+                        data-poster="assets/conceptart/ph1.png" data-video="assets/conceptart/ph1.mp4"
+                        data-audio="assets/songs/ph1.mp3" aria-label="Play Expanded model video demo">
+                        <img src="assets/conceptart/ph1.png" alt="Expanded model concept art">
                     </button>
                 </div>
-                <i>Click/tap to play Demo 2.</i>
+                <i>Click/tap to play Expanded Demo.</i>
 
                 <p>
                     This is the expanded model.
@@ -431,7 +432,7 @@
     <div class="christmas-overlay" id="christmasOverlay" aria-hidden="true">
         <button class="christmas-close" id="christmasClose" type="button">Close</button>
 
-        <!-- VIDEO (for bs1.mp4 mode) -->
+        <!-- VIDEO (for bs1/ph1 video mode) -->
         <video id="demoVideo" playsinline preload="auto" style="
             position:absolute; inset:0;
             width:100%; height:100%;
@@ -440,7 +441,7 @@
             display:none;
         "></video>
 
-        <!-- Image (for ph2.png mode) -->
+        <!-- Image (kept for future, currently unused) -->
         <img id="demoImage" alt="" style="
             position:absolute; inset:0;
             width:100%; height:100%;
@@ -449,14 +450,14 @@
             display:none;
         ">
 
-        <!-- Audio (used by both image+audio and video+audio modes) -->
+        <!-- Audio (used by video mode) -->
         <audio id="demoAudio" preload="auto"></audio>
 
         <!-- Keep iframe only for your Christmas live demo -->
         <iframe id="christmasFrame" src="about:blank" title="Christmas Bonus" allow="fullscreen; autoplay"
             allowfullscreen style="width:100%; height:100%; border:0; display:none; background:#000;"></iframe>
 
-        <!-- Overlay Controls (shown for bs1 + ph2, hidden for iframe) -->
+        <!-- Overlay Controls (shown for video, hidden for iframe) -->
         <div class="overlay-controls" id="overlayControls">
             <div class="controls-panel">
                 <div class="controls-row">
@@ -491,7 +492,6 @@
         const demoImage = document.getElementById("demoImage");
         const demoAudio = document.getElementById("demoAudio");
 
-        const imageDemoButtons = document.querySelectorAll(".concept-demo");
         const videoDemoButtons = document.querySelectorAll(".concept-video-demo");
 
         // Controls UI
@@ -597,7 +597,6 @@
             progress.value = 0;
             controlsPinned = false;
             clearControlsTimer();
-
         }
 
         function closeOverlay() {
@@ -617,59 +616,52 @@
         }
 
         function getDuration() {
-            // For image mode: use audio duration
-            // For video mode: use audio duration (authoritative)
-            // For iframe mode: no duration control
-            if (activeMode === "image" || activeMode === "video") {
+            if (activeMode === "video") {
                 return demoAudio.duration || 0;
             }
             return 0;
         }
 
         function getCurrentTime() {
-            if (activeMode === "image" || activeMode === "video") {
+            if (activeMode === "video") {
                 return demoAudio.currentTime || 0;
             }
             return 0;
         }
 
         function setCurrentTime(t) {
-            if (activeMode === "image" || activeMode === "video") {
+            if (activeMode === "video") {
                 demoAudio.currentTime = t;
-                if (activeMode === "video") demoVideo.currentTime = t;
+                demoVideo.currentTime = t;
             }
         }
 
         function isPlaying() {
-            if (activeMode === "image" || activeMode === "video") {
+            if (activeMode === "video") {
                 return !demoAudio.paused;
             }
             return false;
         }
 
         async function play() {
-            if (activeMode === "image" || activeMode === "video") {
+            if (activeMode === "video") {
                 try {
-                    if (activeMode === "video") {
-                        // keep video silent; mp3 provides audio
-                        demoVideo.muted = true;
-                        await demoVideo.play();
-                    }
+                    demoVideo.muted = true;
+                    await demoVideo.play();
                 } catch (e) { /* ignore */ }
 
                 try {
                     await demoAudio.play();
                 } catch (e) {
-                    // If autoplay blocked (rare since user initiated), user can press Play again.
                     console.log("Audio play blocked:", e);
                 }
             }
         }
 
         function pause() {
-            if (activeMode === "image" || activeMode === "video") {
+            if (activeMode === "video") {
                 demoAudio.pause();
-                if (activeMode === "video") demoVideo.pause();
+                demoVideo.pause();
             }
         }
 
@@ -677,16 +669,13 @@
             if (activeMode !== "video") return;
             const a = demoAudio.currentTime || 0;
             const v = demoVideo.currentTime || 0;
-            // Small drift correction
             if (Math.abs(a - v) > 0.15) {
                 demoVideo.currentTime = a;
             }
         }
 
         function setControlsVisible(visible) {
-            // Don't show controls in iframe mode
             if (activeMode === "iframe") return;
-
             if (visible) overlayControls.classList.add("show");
             else overlayControls.classList.remove("show");
         }
@@ -700,31 +689,26 @@
 
         function scheduleControlsHide() {
             clearControlsTimer();
+            if (activeMode !== "video" || controlsPinned) return;
 
-            // Only auto-hide while playing media modes, and not while pinned
-            if ((activeMode !== "image" && activeMode !== "video") || controlsPinned) return;
-
-            // If paused, keep visible
             if (!isPlaying()) {
                 setControlsVisible(true);
                 return;
             }
 
             controlsHideTimer = setTimeout(() => {
-                // Hide controls while playing
                 setControlsVisible(false);
             }, CONTROLS_HIDE_MS);
         }
 
         function pokeControls() {
-            // Called on user interaction: show + restart hide timer
             if (activeMode === "iframe") return;
             setControlsVisible(true);
             scheduleControlsHide();
         }
 
         function updateUI() {
-            if (activeMode !== "image" && activeMode !== "video") return;
+            if (activeMode !== "video") return;
 
             const dur = getDuration();
             const cur = getCurrentTime();
@@ -744,28 +728,7 @@
             if (isFinite(v)) demoAudio.volume = v;
         }
 
-        // ====== IMAGE + AUDIO MODE (ph2) ======
-        async function playImageDemo(imgSrc, audioSrc) {
-            stopAllMedia();
-            activeMode = "image";
-            openOverlay();
-
-            demoImage.src = imgSrc;
-            demoImage.alt = "Demo preview";
-            demoImage.style.display = "block";
-
-            // controls on
-            showControls(true);
-
-            demoAudio.src = audioSrc;
-            demoAudio.currentTime = 0;
-            demoAudio.muted = false;
-            setVolumeFromSlider();
-
-            await play();
-        }
-
-        // ====== VIDEO + AUDIO MODE (bs1) ======
+        // ====== VIDEO + AUDIO MODE (bs1 + ph1) ======
         async function playVideoDemo(videoSrc, audioSrc, posterSrc) {
             stopAllMedia();
             activeMode = "video";
@@ -774,9 +737,8 @@
             if (posterSrc) demoVideo.poster = posterSrc;
             demoVideo.src = videoSrc;
             demoVideo.style.display = "block";
-            demoVideo.muted = true; // we always use mp3 audio
+            demoVideo.muted = true;
 
-            // controls on
             showControls(true);
 
             demoAudio.src = audioSrc;
@@ -784,20 +746,10 @@
             demoAudio.muted = false;
             setVolumeFromSlider();
 
-            // Start both
             await play();
         }
 
-        // Hook up image demos (ph2)
-        imageDemoButtons.forEach(btn => {
-            btn.addEventListener("click", () => {
-                const img = btn.getAttribute("data-img");
-                const audio = btn.getAttribute("data-audio");
-                playImageDemo(img, audio);
-            });
-        });
-
-        // Hook up video demo (bs1)
+        // Hook up ALL video demos (bs1 + ph1)
         videoDemoButtons.forEach(btn => {
             btn.addEventListener("click", () => {
                 const poster = btn.getAttribute("data-poster");
@@ -813,7 +765,6 @@
             activeMode = "iframe";
             openOverlay();
 
-            // Hide our controls for iframe mode
             showControls(false);
 
             frame.style.display = "block";
@@ -830,38 +781,38 @@
 
         // ===== Controls wiring =====
         btnPlay.addEventListener("click", () => {
-            if (activeMode !== "image" && activeMode !== "video") return;
+            if (activeMode !== "video") return;
             if (isPlaying()) pause();
             else play();
             updateUI();
         });
 
         btnRestart.addEventListener("click", () => {
-            if (activeMode !== "image" && activeMode !== "video") return;
+            if (activeMode !== "video") return;
             setCurrentTime(0);
             play();
         });
 
         btnMute.addEventListener("click", () => {
-            if (activeMode !== "image" && activeMode !== "video") return;
+            if (activeMode !== "video") return;
             demoAudio.muted = !demoAudio.muted;
             updateUI();
         });
 
         vol.addEventListener("input", () => {
-            if (activeMode !== "image" && activeMode !== "video") return;
+            if (activeMode !== "video") return;
             controlsPinned = true;
             pokeControls();
             setVolumeFromSlider();
         });
         vol.addEventListener("change", () => {
-            if (activeMode !== "image" && activeMode !== "video") return;
+            if (activeMode !== "video") return;
             controlsPinned = false;
             pokeControls();
         });
 
         progress.addEventListener("change", () => {
-            if (activeMode !== "image" && activeMode !== "video") return;
+            if (activeMode !== "video") return;
 
             const dur = getDuration();
             if (dur > 0) {
@@ -883,30 +834,26 @@
         // Tap anywhere (not buttons/sliders) toggles play/pause.
         // Double tap toggles fullscreen.
         overlay.addEventListener("click", (e) => {
-            const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : "";
             const isUI = e.target.closest && (e.target.closest(".controls-panel") || e.target.closest(".christmas-close"));
             if (isUI) return;
 
-            if (activeMode !== "image" && activeMode !== "video") return;
+            if (activeMode !== "video") return;
 
             const now = Date.now();
             const dt = now - lastTapTime;
             lastTapTime = now;
 
             if (dt < 280) {
-                // double tap
                 if (isFullscreen()) exitFullscreen();
                 else requestFullscreen(overlay);
                 return;
             }
 
-            // single tap
             if (isPlaying()) pause();
             else play();
             updateUI();
         });
 
-        // Keep video time in sync with audio (video is muted)
         demoAudio.addEventListener("timeupdate", () => {
             syncVideoToAudio();
             updateUI();
@@ -920,19 +867,17 @@
 
         closeBtn.addEventListener("click", closeOverlay);
 
-        // ESC closes overlay on desktop
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape" && overlay.classList.contains("show")) {
                 closeOverlay();
             }
         });
-        // Show controls on any interaction inside overlay
+
         ["mousemove", "touchstart", "touchmove", "pointermove", "keydown"].forEach(evt => {
             overlay.addEventListener(evt, () => {
-                if (activeMode === "image" || activeMode === "video") pokeControls();
+                if (activeMode === "video") pokeControls();
             }, { passive: true });
         });
-
     </script>
 
 </body>
